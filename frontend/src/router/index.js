@@ -33,7 +33,6 @@ const routes = [
       title: '编辑数据'
     }
   }
-  // IP修改功能已被移除
 ]
 
 const router = createRouter({
