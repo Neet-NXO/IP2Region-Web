@@ -128,8 +128,11 @@
 </template>
 
 <script>
-import { searchIP, getStatus } from '@/api'
 import { ElMessage } from 'element-plus'
+import {
+  searchIP as searchIPApi,
+  getXdbStatus as getXdbStatusApi
+} from '@/api'
 
 export default {
   name: 'Search',
@@ -178,7 +181,7 @@ export default {
 
       this.loading = true
       try {
-        const result = await searchIP(
+        const result = await searchIPApi(
           this.searchForm.ip, 
           this.searchForm.dbPath, 
           this.searchForm.searchMode
@@ -196,7 +199,7 @@ export default {
 
     async fetchStatus() {
       try {
-        const result = await getStatus()
+        const result = await getXdbStatusApi()
         this.status = result.data
         // 根据数据库状态自动选择搜索模式
         this.autoSelectSearchMode()
