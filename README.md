@@ -44,7 +44,6 @@
     - 毫秒级甚至微秒级的查询响应（取决于加载模式）。
     - 提供全局搜索统计（总搜索次数、错误次数、IO操作数）。
     - API响应包含纳秒级查询耗时。
-    - 提供调试接口 (`/api/debug/status`)，帮助诊断和监控服务状态。
 - 📱 **现代化Web界面**: 
     - 基于 Vue 3 + Element Plus 构建，提供响应式和用户友好的操作体验。
     - 实时显示任务（导出/生成）进度。
@@ -59,16 +58,12 @@
 - **框架**: Gin Web框架
 - **核心**: ip2region XDB数据库引擎
 - **并发处理**: 使用`sync.RWMutex`和`atomic`包保证并发安全
-- **内存管理**: 智能管理XDB文件加载（文件、向量索引、完全内存），支持垃圾回收优化
+- **内存管理**: 智能管理XDB文件加载（文件、向量索引、完全内存）
 - **功能**: RESTful API、文件处理、异步任务队列、性能监控
 
 ### 前端
 - **框架**: Vue 3 (Composition API)
 - **UI库**: Element Plus
-- **构建工具**: Vite
-- **路由**: Vue Router 4
-- **HTTP客户端**: Axios
-- **状态管理**: Pinia
 
 ## 📦 快速开始
 
@@ -88,7 +83,7 @@ cd ip2region-web
 #### 2. 后端启动
 ```bash
 # 安装Go依赖
-go mod download
+go mod tidy
 
 # 启动后端服务 (默认端口8080)
 go run main.go
@@ -100,7 +95,7 @@ go run main.go -port=9000
 go run main.go -static=./frontend/dist
 ```
 
-#### 3. 前端开发
+#### 3. 前端
 ```bash
 # 进入前端目录
 cd frontend
@@ -108,37 +103,8 @@ cd frontend
 # 安装依赖
 npm install
 
-# 启动开发服务器
-npm run dev
-
 # 构建生产版本
 npm run build
-```
-
-#### 4. 使用构建脚本
-
-**Linux/macOS:**
-```bash
-# 检查环境
-make check
-
-# 完整构建
-make build
-
-# 运行项目
-make run
-```
-
-**Windows:**
-```batch
-# 检查环境
-make.bat check
-
-# 完整构建
-make.bat build
-
-# 运行项目
-make.bat run
 ```
 
 ## 🚀 使用说明
@@ -207,8 +173,6 @@ ip2region-web/
 ├── ReadMe.md              # 项目说明
 ├── CHANGELOG.md           # 更新日志
 ├── .gitignore             # Git忽略文件
-├── Makefile               # Linux/macOS构建脚本
-├── make.bat               # Windows构建脚本
 ├── api/                   # API接口层
 │   └── handler.go         # HTTP请求处理器
 ├── xdb/                   # IP2Region核心包
