@@ -152,48 +152,49 @@ make.bat run
     - **内存模式**: 将整个XDB文件加载到内存。提供最佳查询性能，但会消耗更多内存。适用于对查询速度有极致要求的场景。
     - **文件模式 (通过API)**: API `/api/search` 在请求时可以指定 `searchMode: "file"` 和 `dbPath`。这种模式不将数据常驻内存，每次查询都会读文件，适合内存极其有限或不常查询的场景。
 - **加载/卸载**: 点击 "加载数据库" 将选定的XDB文件按选定模式加载。加载成功后，按钮会变为 "卸载数据库"。
-- **状态查看**: 加载成功后，会显示当前加载模式、内存占用、向量索引等信息。也可以通过 `/api/status` 接口获取详细状态。
-- **强制加载到内存**: 若遇到问题，可以通过 `/api/force-load-memory` 接口强制将指定XDB文件以完全内存模式加载。
+- **状态查看**: 加载成功后，会显示当前加载模式、内存占用、向量索引等信息。也可以通过 `/api/xdb-status` 接口获取详细状态和统计信息。
+- **强制加载到内存**: 若遇到加载问题或需要确保最佳性能，可以通过 `POST /api/force-load-memory` 接口（请求体包含 `dbPath`）强制将指定XDB文件以完全内存模式加载。
 
 ### 2. IP查询 (IP查询页面 / API)
 - **界面查询**: 在 "IP查询" 页面输入IP地址，系统会使用当前已加载的XDB数据库进行查询。
 - **API查询**: 
     - 若已有加载的XDB (向量/内存模式)，直接调用 `POST /api/search` 并提供 `ip` 参数。
     - 若要使用特定的XDB文件或文件模式查询，调用 `POST /api/search` 时需额外提供 `dbPath` 和 `searchMode: "file"` 参数。
-- **结果**: 显示国家、省份、城市、运营商等信息，以及查询耗时。
+- **结果**: 显示国家、省份、城市、运营商等信息，以及查询耗时 (纳秒级)。
 
 ### 3. 数据库生成 (生成数据库页面 / API)
 - **界面操作**: 
     1. 访问 "生成数据库" 页面。
     2. 输入源文本文件路径 (包含IP段和区域信息，每行格式通常为 `IP段|区域信息` 或 `起始IP|结束IP|区域信息`)。
     3. 输入目标XDB文件路径 (例如: `./new_ip2region.xdb`)。
-    4. 点击 "开始生成"。生成过程为异步，会显示任务ID和进度。
-- **API操作**: 使用 `POST /api/generate-with-progress` 接口，提供 `srcFile` 和 `dstFile`。
+    4. 点击 "开始生成"。生成过程为异步，会显示任务ID和进度条。
+- **API操作**: 使用 `POST /api/generate-with-progress` 接口，请求体包含 `srcFile` 和 `dstFile`。
 - **进度与取消**: 通过 `GET /api/generate-task/:taskId` 查看进度，通过 `POST /api/generate-task/:taskId/cancel` 取消任务。
 
 ### 4. 数据编辑 (编辑数据页面 / API)
-- **加载源文件**: 在 "编辑数据" 页面，首先需要指定要编辑的源文本文件 (通常是用于生成XDB的原始IP段数据文件)。
+- **加载源文件**: 在 "编辑数据" 页面，首先需要通过 `POST /api/edit/file` (请求体包含 `file` 指向源文本文件路径，`srcFile` 可用于临时文件名) 或在前端界面选择并上传源文本文件 (通常是用于生成XDB的原始IP段数据文件)。成功后，服务器会缓存此文件用于后续编辑。
 - **编辑操作**:
-    - **列出IP段**: 查看和搜索源文件中的IP段。
-    - **修改IP段**: 直接在列表中修改某个IP段的区域信息。
-    - **从文件批量编辑**: 准备一个包含待修改IP段的文件，通过接口 `POST /api/edit/file` 上传并应用更改。
+    - **列出IP段**: 使用 `POST /api/list/segments` (请求体包含 `srcFile` 和分页参数 `offset`, `size`) 查看和搜索源文件中的IP段。
+    - **修改IP段**: 使用 `POST /api/edit/segment` (请求体包含 `segment` 如 `1.2.3.4|中国|广东|深圳|电信`, 和 `srcFile`) 或 `PUT /api/edit/segment` 来修改单个IP段。前端界面通常会简化此操作。
 - **保存更改**:
-    - `POST /api/edit/save`: 仅保存对源文本文件的修改。
-    - `POST /api/edit/saveAndGenerate`: 保存修改并立即使用修改后的源文件生成新的XDB数据库。
-- **状态管理**: 可以通过 `GET /api/edit/current-file` 查看当前编辑的文件，通过 `POST /api/edit/unload-file` 清除当前编辑状态。
+    - `POST /api/edit/save` (请求体包含 `srcFile`): 仅保存对当前编辑的源文本文件的修改到服务器缓存的路径。
+    - `POST /api/edit/saveAndGenerate` (请求体包含 `srcFile` 和 `dstFile`): 保存修改到源文件，并立即使用修改后的源文件生成新的XDB数据库到 `dstFile`。
+- **状态管理**: 
+    - `GET /api/edit/current-file`: 查看当前服务器正在编辑的源文件信息。
+    - `POST /api/edit/unload-file` (请求体包含 `srcFile`): 清除服务器当前编辑的源文件状态，放弃未保存的更改。
 
 ### 5. 数据导出 (首页 / API)
 - **界面操作** (首页加载XDB后出现导出按钮):
     1. 确保已加载一个XDB文件。
     2. 点击 "导出XDB" 按钮。
-    3. 在弹窗中指定导出的文本文件路径。
-    4. 点击 "导出"。导出过程为异步，会显示任务ID和进度。
-- **API操作**: 使用 `POST /api/export-xdb` 接口，提供 `xdbPath` (要导出的XDB文件) 和 `exportPath` (目标文本文件)。
+    3. 在弹窗中指定导出的文本文件路径 (例如: `ip2region_export.txt`)。
+    4. 点击 "导出"。导出过程为异步，会显示任务ID和进度条。
+- **API操作**: 使用 `POST /api/export-xdb` 接口，请求体包含 `xdbPath` (要导出的XDB文件) 和 `exportPath` (目标文本文件)。
 - **进度与取消**: 通过 `GET /api/export-task/:taskId` 查看进度，通过 `POST /api/export-task/:taskId/cancel` 取消任务。
 
 ### 6. 监控与调试
-- **常规状态**: `GET /api/status` 提供基础的加载状态和搜索统计。
-- **详细调试**: `GET /api/debug/status` 提供更深度的内部状态，用于问题排查。
+- **常规状态**: `GET /api/xdb-status` 提供基础的加载状态和搜索统计信息。
+- **详细调试**: `GET /api/debug/status` 提供更深度的内部状态信息，包括加载器详情、内存模式状态、向量索引详情等，用于问题排查和性能分析。
 
 ## 🏗 项目结构
 
@@ -245,7 +246,7 @@ ip2region-web/
 ### XDB数据库管理
 - `POST /api/load-xdb` - 加载XDB文件到指定模式 (vector/memory)
 - `POST /api/unload-xdb` - 卸载当前加载的XDB文件
-- `GET /api/status` - 获取当前XDB加载状态和统计信息
+- `GET /api/xdb-status` - 获取当前XDB加载状态和统计信息
 - `POST /api/force-load-memory` - 强制重新加载XDB文件到完全内存模式
 
 ### 数据编辑
