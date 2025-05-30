@@ -50,14 +50,11 @@ func setupRouter() *gin.Engine {
 			// 加载XDB文件到内存 - 支持两种路径格式
 			apiGroup.POST("/load-xdb", api.LoadXdbToMemory)
 
-			// 获取状态信息
-			apiGroup.GET("/status", api.GetXdbStatus)
+			// 获取XDB文件加载状态
+			apiGroup.GET("/xdb-status", api.GetXdbStatus)
 
 			// 卸载内存中的XDB文件
 			apiGroup.POST("/unload-xdb", api.UnloadXdb)
-
-			// 获取XDB文件加载状态
-			apiGroup.GET("/xdb-status", api.GetXdbStatus)
 
 			// 导出XDB文件到文本文件
 			apiGroup.POST("/export-xdb", api.ExportXdb)
@@ -148,14 +145,11 @@ func setupRouter() *gin.Engine {
 			// 加载XDB文件到内存 - 支持两种路径格式
 			apiGroup.POST("/load-xdb", api.LoadXdbToMemory)
 
-			// 获取状态信息
-			apiGroup.GET("/status", api.GetXdbStatus)
+			// 获取XDB文件加载状态
+			apiGroup.GET("/xdb-status", api.GetXdbStatus)
 
 			// 卸载内存中的XDB文件
 			apiGroup.POST("/unload-xdb", api.UnloadXdb)
-
-			// 获取XDB文件加载状态
-			apiGroup.GET("/xdb-status", api.GetXdbStatus)
 
 			// 导出XDB文件到文本文件
 			apiGroup.POST("/export-xdb", api.ExportXdb)
