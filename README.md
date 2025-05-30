@@ -27,32 +27,19 @@
 
 - 🚀 **快速查询**: 毫秒级 IP 地理位置查询
 - 🌐 **现代界面**: 基于 Vue 3 + TypeScript 的响应式前端
-- 📊 **数据可视化**: 查询统计图表和历史记录
-- 🔍 **批量查询**: 支持批量 IP 地址查询
-- 💾 **多数据库**: 支持 MySQL 和 SQLite
-- 🔐 **用户认证**: JWT 令牌认证系统
-- 📋 **API 文档**: 完整的 Swagger API 文档
 - 🎯 **高性能**: Go 语言构建的高性能后端
-- 📱 **移动友好**: 响应式设计，支持移动设备
 
 ## 🛠 技术栈
 
 ### 后端
 - **语言**: Go 1.24+
 - **框架**: Gin (HTTP 路由)
-- **ORM**: GORM (数据库操作)
-- **认证**: JWT (JSON Web Token)
-- **文档**: Swagger/OpenAPI
-- **数据库**: MySQL / SQLite
-
 ### 前端
 - **框架**: Vue 3 + TypeScript
 - **构建工具**: Vite
 - **UI 库**: Element Plus
-- **状态管理**: Pinia
 - **路由**: Vue Router 4
 - **HTTP 客户端**: Axios
-- **图表**: ECharts
 
 ## 📦 快速开始
 
